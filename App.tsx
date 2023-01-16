@@ -12,6 +12,7 @@ export function App() {
   } = useForm();
   return (
     <React.Fragment>
+      {JSON.stringify(getValues())}
       <a href="#">Test Link as a tags can 'focusin'</a>
       <form onSubmit={handleSubmit((data) => console.log(data))}>
         <input {...register('firstName')} placeholder="First Name" />
