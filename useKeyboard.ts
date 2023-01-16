@@ -23,7 +23,29 @@ export function useKeyboard(
     key: string
   ) => {
     const currentElement = currentfocusedElement.current;
-    if (!currentElement) {
+    if (!currentElement || currentElement?.type === 'submit') {
+      return;
+    }
+
+    // Move Back
+    if (key === 'RETURN') {
+      const nextEl = findNextTabStop(currentElement);
+      currentfocusedElement.current = nextEl;
+      nextEl.focus();
+
+      return;
+    }
+    if (key === '<') {
+      const sectionStart = currentElement.selectionStart;
+      currentElement.selectionStart = sectionStart - 1;
+      currentElement.selectionEnd = sectionStart - 1;
+      return;
+    }
+    // Move Fwrd
+    if (key === '>') {
+      const sectionStart = currentElement.selectionStart;
+      currentElement.selectionStart = sectionStart + 1;
+      currentElement.selectionEnd = sectionStart + 1;
       return;
     }
 
@@ -55,23 +77,26 @@ export function useKeyboard(
     // This is another way to do it
     // document.addEventListener('focusin', setCurrentElement);
   }, []);
-
-  useEffect(() => {
-    function handleClickOutside(event) {
-      // WE are not inside the keyboard dov
-      console.log(event.target.type);
-      if (keyboardRef.current && !keyboardRef.current.contains(event.target)) {
-        console.log(event.target.tagName);
-        if (event.target.tagName === 'INPUT' && event.target.type === 'text') {
-          setShowKeyboard(true);
-          return (currentfocusedElement.current =
-            event.target as HTMLInputElement);
-        } else {
-          setShowKeyboard(false);
-          currentfocusedElement.current = undefined;
-        }
+  function handleClickOutside(event) {
+    // WE are not inside the keyboard dov
+    console.log(event.target.type);
+    if (keyboardRef.current && !keyboardRef.current.contains(event.target)) {
+      console.log('asdasdasdasd', event.target.tagName);
+      if (
+        event.target.tagName === 'INPUT' &&
+        event.target.type === 'text' &&
+        event.target.type !== 'submit'
+      ) {
+        setShowKeyboard(true);
+        return (currentfocusedElement.current =
+          event.target as HTMLInputElement);
+      } else {
+        setShowKeyboard(false);
+        currentfocusedElement.current = undefined;
       }
     }
+  }
+  useEffect(() => {
     // Bind the event listener
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
@@ -81,4 +106,13 @@ export function useKeyboard(
   }, [keyboardRef]);
 
   return [onKeyPress, showKeyboard];
+}
+
+function findNextTabStop(el: Element) {
+  var universe = document.querySelectorAll('input, select, textarea');
+  var list = Array.prototype.filter.call(universe, function (item) {
+    return item.tabIndex >= '0';
+  });
+  var index = list.indexOf(el);
+  return list[index + 1] || list[0];
 }
