@@ -1,0 +1,30 @@
+h1,
+p {
+  font-family: Lato;
+}
+
+.keyRow {
+  display: flex;
+}
+.keyboard {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  background-color: #efefef;
+  padding: 10px;
+  margin-top: 10px;
+}
+.key {
+  /* background-color: black; */
+  color: black;
+  border-radius: 10px;
+  padding: 10px;
+  margin: 2px;
+  cursor: pointer;
+  border: 1px solid black;
+}
+.none {
+  display: none;
+}
